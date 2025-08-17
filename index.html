@@ -65,20 +65,28 @@
     }
     @media (max-width:600px) {
   .container {
-    display: block;          /* stop using CSS grid completely */
+    display:block;
   }
   .card {
-    display: flex;
-    flex-direction: row;
+    display:flex;
+    justify-content: space-between;
     align-items: center;
-    text-align: left;
-    margin-bottom: 15px;     /* space between cards on mobile */
+    text-align:left;
+    margin-bottom:15px;
+    padding:15px;
   }
   .card img {
-    width: 80px;
-    height: 80px;
-    margin-right: 10px;
-    margin-bottom: 0;
+    width:80px;
+    height:80px;
+    margin-right:10px;
+  }
+  .card-content {
+    display:flex;
+    flex-direction:column;
+  }
+  /* bigger button on mobile */
+  .card button {
+    padding:12px 18px;
   }
 }
   </style>
@@ -125,8 +133,10 @@
     card.className = "card";
     card.innerHTML = `
       <img src="${d.img}" alt="${d.name}">
+      <div class="card-content">
       <div>${d.name}</div>
       <div>${d.price}💋</div>
+      </div>
       <button>Add</button>`;
     card.querySelector("button").addEventListener("click", () => addToBasket(d));
     drinkList.appendChild(card);
