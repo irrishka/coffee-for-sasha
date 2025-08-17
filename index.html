@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Coffee for Sasha</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:#FFEBF3;
+      margin:0;
+      padding:20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background:#FFF;
+      border-radius:10px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+      padding:15px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .card img {
+      width:120px;
+      height:120px;
+      margin-bottom:10px;
+    }
+    .card button {
+      background:#B463FB;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      margin-top:10px;
+    }
+    #basket {
+      margin-top:40px;
+      background:#fff;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
+    #basket button {
+      background:#B463FB;
+      color:#fff;
+      border:none;
+      padding:10px 15px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    .delete-link {
+      cursor: pointer;
+      color:#555;
+      text-decoration: underline;
+      margin-left:6px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Hi, Sasha, what would you like to have today?</h1>
+
+<div class="container" id="drink-list"></div>
+
+<div id="basket" style="display:none;">
+  <h2>Check out</h2>
+  <ul id="basket-items"></ul>
+  <p><strong>Total: <span id="total"></span>💋</strong></p>
+
+  <form id="orderForm" action="https://formspree.io/f/mqalokwb" method="POST">
+    <input type="hidden" name="order" id="orderField" />
+    <button type="submit">Place an order</button>
+  </form>
+</div>
+
+<script>
+  const drinks = [
+    {name:"Flat White", price:3, img:"images/flat-white.png"},
+    {name:"Cappuccino", price:4, img:"images/cappuccino.png"},
+    {name:"Latte macchiato", price:4, img:"images/latte-macchiato.png"},
+    {name:"Matcha Latte", price:5, img:"images/matcha-latte.png"},
+    {name:"Matcha Shot", price:2, img:"images/matcha-shot.png"},
+    {name:"Hojicha Latte", price:4, img:"images/hojicha-latte.png"},
+    {name:"Jasmin milk tea", price:4, img:"images/jasmin-milk-tea.png"},
+    {name:"Hojicha milk tea", price:4, img:"images/hojicha-milk-tea.png"}
+  ];
+
+  const drinkList = document.getElementById("drink-list");
+  const basketItems = document.getElementById("basket-items");
+  const totalEl = document.getElementById("total");
+  const orderField = document.getElementById("orderField");
+  const basket = document.getElementById("basket");
+
+  let basketData = [];
+  
+  drinks.forEach((d, index) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}">
+      <div>${d.name}</div>
+      <div>${d.price}💋</div>
+      <button>Add</button>`;
+    card.querySelector("button").addEventListener("click", () => addToBasket(d));
+    drinkList.appendChild(card);
+  });
+
+  function addToBasket(drink){
+    basketData.push(drink);
+    renderBasket();
+  }
+
+  function removeFromBasket(index){
+    basketData.splice(index, 1);
+    renderBasket();
+  }
+
+  function renderBasket(){
+    if(basketData.length===0){
+      basket.style.display = "none";
+      return;
+    }
+    basket.style.display = "block";
+    basketItems.innerHTML = "";
+    let total = 0;
+
+    basketData.forEach((item, index)=>{
+      total+=item.price;
+      const li = document.createElement("li");
+      li.innerHTML = `${item.name} (${item.price}💋) 
+        <span class="delete-link" onclick="removeFromBasket(${index})">Delete</span>`;
+      basketItems.appendChild(li);
+    });
+    totalEl.textContent = total;
+    orderField.value = "Items: " + basketData.map(i=>i.name+" ("+i.price+"💋)").join(", ") + " | Total: " + total + "💋";
+  }
+</script>
+</body>
+</html>
