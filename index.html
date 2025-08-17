@@ -81,6 +81,13 @@
         margin-right:10px;
         margin-bottom:0;
       }
+      .card-content {
+        display:flex;
+        flex-direction:column;
+    }
+      .card button {
+        padding:12px 18px; /* bigger button on mobile */
+    }
     }
   </style>
 </head>
@@ -126,8 +133,10 @@
     card.className = "card";
     card.innerHTML = `
     <img src="${d.img}" alt="${d.name}">
-      <div>${d.name}</div>
-      <div>${d.price}💋</div>
+      <div class="card-content">
+        <div>${d.name}</div>
+        <div>${d.price}💋</div>
+      </div>
       <button>Add</button>`;
     card.querySelector("button").addEventListener("click", () => addToBasket(d));
     drinkList.appendChild(card);
