@@ -134,10 +134,12 @@
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
+    <div>
     <img src="${d.img}" alt="${d.name}">
       <div class="card-content">
         <div>${d.name}</div>
         <div>${d.price}💋</div>
+      </div>
       </div>
       <button>Add</button>`;
     card.querySelector("button").addEventListener("click", () => addToBasket(d));
