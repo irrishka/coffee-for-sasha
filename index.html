@@ -68,9 +68,11 @@
     grid-template-columns: 1fr; /* one column on mobile */
       }
       .card {
-        flex-direction: row;         /* image + text side by side */
+        display: flex;
+        flex-direction: row;
         justify-content: flex-start;
         text-align: left;
+        align-items: center;
       }
       .card img {
         width:80px;
