@@ -63,32 +63,24 @@
       margin-left:6px;
       font-size: 0.9em;
     }
-    @media (max-width:600px) {
-  .container {
-    display:block; /* disable grid */
-  }
-  .card {
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align:left;
-    padding:15px;
-    margin-bottom:15px;
-  }
-  .card img {
-    width:80px;
-    height:80px;
-    margin-right:10px;
-    margin-bottom:0;
-  }
-  .card-content {
-    display:flex;
-    flex-direction:column;
-  }
-  .card button {
-    padding:12px 18px; /* bigger button on mobile */
-  }
-}
+    @media (max-width: 600px) {
+      .container {
+    grid-template-columns: 1fr; /* one column on mobile */
+      }
+      .card {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        align-items: center;
+      }
+      .card img {
+        width:80px;
+        height:80px;
+        margin-right:10px;
+        margin-bottom:0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -132,12 +124,10 @@
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${d.img}" alt="${d.name}">
-  <div class="card-content">
-    <div class="name">${d.name}</div>
-    <div class="price">${d.price}💋</div>
-  </div>
-  <button>Add</button>`;
+    <img src="${d.img}" alt="${d.name}">
+      <div>${d.name}</div>
+      <div>${d.price}💋</div>
+      <button>Add</button>`;
     card.querySelector("button").addEventListener("click", () => addToBasket(d));
     drinkList.appendChild(card);
   });
