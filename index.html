@@ -64,6 +64,7 @@
       margin-left:6px;
       font-size: 0.9em;
     }
+
     /* Hot/Cold Toggle */
     .temp-toggle {
       display: inline-flex;
@@ -99,7 +100,7 @@
     .temp-toggle button:not(.active-hot):not(.active-cold) {
       opacity: 0.45;
     }
- 
+
     /* basket list item layout */
     #modal-items li, #basket-items li {
       display: flex;
@@ -113,6 +114,7 @@
     #modal-items, #basket-items {
       padding-left: 0;
     }
+
     @media (max-width: 600px) {
       .container {
         display: flex;
@@ -141,47 +143,47 @@
       .card-content {
         display:flex;
         flex-direction:column;
-    }
+      }
       .card button {
-        padding:12px 18px; /* bigger button on mobile */
+        padding:12px 18px;
+      }
     }
+    #cart-icon {
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
     }
-  #cart-icon {
-    position: fixed;
-    top: 12px;
-    right: 16px;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1000;
-  }
-  #cart-modal {
-    position: fixed;
-    top: -100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    transition: top 0.3s ease;
-    z-index: 999;
-  }
-  #cart-modal-content {
-    padding: 20px;
-  }
-  #cart-modal.open {
-    top: 0;
-  }
-  #cart-modal button {
-    background:#B463FB;
-    color:#fff;
-    border:none;
-    padding:10px 15px;
-    border-radius:8px;
-    cursor:pointer;
-  }
-  #close-modal {
-    font-size: 24px;
-    cursor: pointer;
-  }
+    #cart-modal {
+      position: fixed;
+      top: -100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      transition: top 0.3s ease;
+      z-index: 999;
+    }
+    #cart-modal-content {
+      padding: 20px;
+    }
+    #cart-modal.open {
+      top: 0;
+    }
+    #cart-modal button {
+      background:#B463FB;
+      color:#fff;
+      border:none;
+      padding:10px 15px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    #close-modal {
+      font-size: 24px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -215,11 +217,9 @@
 
 <script>
   const drinks = [
-    {name:"Americano", price:2, img:"images/americano.png"},
     {name:"Flat White", price:3, img:"images/flat-white.png"},
     {name:"Cappuccino", price:4, img:"images/cappuccino.png"},
     {name:"Latte macchiato", price:4, img:"images/latte-macchiato.png"},
-    {name:"V60", price:6, img:"images/v60.png"},
     {name:"Matcha Latte", price:5, img:"images/matcha-latte.png"},
     {name:"Matcha Shot", price:2, img:"images/matcha-shot.png"},
     {name:"Hojicha Latte", price:4, img:"images/hojicha-latte.png"},
@@ -233,6 +233,7 @@
   const orderField = document.getElementById("orderField");
   const basket = document.getElementById("basket");
 
+  // Each item: { ...drink, temp: "hot" | "cold" }
   let basketData = [];
   
   drinks.forEach((d, index) => {
@@ -240,39 +241,45 @@
     card.className = "card";
     card.innerHTML = `
     <div class="card-container">
-    <img src="${d.img}" alt="${d.name}">
+      <img src="${d.img}" alt="${d.name}">
       <div class="card-content">
         <div>${d.name}</div>
         <div>${d.price}💋</div>
-    </div>
+      </div>
     </div>
     <button>Add</button>`;
     card.querySelector("button").addEventListener("click", () => addToBasket(d));
     drinkList.appendChild(card);
   });
 
-  function addToBasket(drink){
-    basketData.push(drink);
+  function addToBasket(drink) {
+    basketData.push({ ...drink, temp: "hot" });
     renderBasket();
   }
 
-  function removeFromBasket(index){
+  function removeFromBasket(index) {
     basketData.splice(index, 1);
     renderBasket();
   }
 
-  function renderBasket(){
+  function setTemp(index, temp) {
+    basketData[index].temp = temp;
+    renderBasket();
+  }
+
+  function renderBasket() {
     const cartIcon = document.getElementById("cart-icon");
     const modalItems = document.getElementById("modal-items");
     const modalTotal = document.getElementById("modal-total");
+
     cartIcon.textContent = "🛒(" + basketData.length + ")";
     modalItems.innerHTML = "";
     let total = 0;
 
-    basketData.forEach((item, index)=>{
-      total+=item.price;
+    basketData.forEach((item, index) => {
+      total += item.price;
       const li = document.createElement("li");
-      
+
       const isHot = item.temp === "hot";
 
       li.innerHTML = `
@@ -291,7 +298,7 @@
       `;
       modalItems.appendChild(li);
     });
-    
+
     modalTotal.textContent = total;
 
     // Build the order summary string, including temp for each item
@@ -300,18 +307,18 @@
       .join(", ");
     orderField.value = "Items: " + orderSummary + " | Total: " + total + "💋";
   }
-  
-    // open modal when cart icon is clicked
+
+  // Open modal when cart icon is clicked
   document.getElementById("cart-icon").addEventListener("click", () => {
     document.getElementById("cart-modal").classList.add("open");
   });
   
-  // close modal
+  // Close modal
   document.getElementById("close-modal").addEventListener("click", () => {
     document.getElementById("cart-modal").classList.remove("open");
   });
   
-  // submit order from modal
+  // Submit order from modal
   document.getElementById("modal-order-btn").addEventListener("click", () => {
     document.getElementById("orderForm").submit();
   });
