@@ -64,6 +64,55 @@
       margin-left:6px;
       font-size: 0.9em;
     }
+    /* Hot/Cold Toggle */
+    .temp-toggle {
+      display: inline-flex;
+      align-items: center;
+      background: #f3e8ff;
+      border-radius: 20px;
+      padding: 2px;
+      margin-left: 10px;
+      gap: 0;
+      vertical-align: middle;
+    }
+    .temp-toggle button {
+      background: transparent;
+      border: none;
+      border-radius: 18px;
+      padding: 3px 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      line-height: 1;
+      margin: 0 !important;
+    }
+    .temp-toggle button.active-hot {
+      background: #ff6b35;
+      box-shadow: 0 1px 4px rgba(255,107,53,0.4);
+      transform: scale(1.1);
+    }
+    .temp-toggle button.active-cold {
+      background: #63c5ea;
+      box-shadow: 0 1px 4px rgba(99,197,234,0.4);
+      transform: scale(1.1);
+    }
+    .temp-toggle button:not(.active-hot):not(.active-cold) {
+      opacity: 0.45;
+    }
+ 
+    /* basket list item layout */
+    #modal-items li, #basket-items li {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+      list-style: none;
+      padding-left: 0;
+    }
+    #modal-items, #basket-items {
+      padding-left: 0;
+    }
     @media (max-width: 600px) {
       .container {
         display: flex;
@@ -166,9 +215,11 @@
 
 <script>
   const drinks = [
+    {name:"Americano", price:2, img:"images/americano.png"},
     {name:"Flat White", price:3, img:"images/flat-white.png"},
     {name:"Cappuccino", price:4, img:"images/cappuccino.png"},
     {name:"Latte macchiato", price:4, img:"images/latte-macchiato.png"},
+    {name:"V60", price:6, img:"images/v60.png"},
     {name:"Matcha Latte", price:5, img:"images/matcha-latte.png"},
     {name:"Matcha Shot", price:2, img:"images/matcha-shot.png"},
     {name:"Hojicha Latte", price:4, img:"images/hojicha-latte.png"},
@@ -214,21 +265,42 @@
     const cartIcon = document.getElementById("cart-icon");
     const modalItems = document.getElementById("modal-items");
     const modalTotal = document.getElementById("modal-total");
-    // update icon
     cartIcon.textContent = "🛒(" + basketData.length + ")";
-    // render modal content
     modalItems.innerHTML = "";
     let total = 0;
 
     basketData.forEach((item, index)=>{
       total+=item.price;
       const li = document.createElement("li");
-      li.innerHTML = `${item.name} (${item.price}💋) <span class="delete-link" onclick="removeFromBasket(${index})">Delete</span>`;
+      
+      const isHot = item.temp === "hot";
+
+      li.innerHTML = `
+        <span>${item.name} (${item.price}💋)</span>
+        <span class="temp-toggle">
+          <button
+            class="${isHot ? 'active-hot' : ''}"
+            title="Hot"
+            onclick="setTemp(${index}, 'hot')">🔥</button>
+          <button
+            class="${!isHot ? 'active-cold' : ''}"
+            title="Cold"
+            onclick="setTemp(${index}, 'cold')">🧊</button>
+        </span>
+        <span class="delete-link" onclick="removeFromBasket(${index})">Delete</span>
+      `;
       modalItems.appendChild(li);
     });
+    
     modalTotal.textContent = total;
-    orderField.value = "Items: " + basketData.map(i=>i.name+" ("+i.price+"💋)").join(", ") + " | Total: " + total + "💋";
+
+    // Build the order summary string, including temp for each item
+    const orderSummary = basketData
+      .map(i => `${i.name} (${i.price}💋, ${i.temp === "hot" ? "🔥 Hot" : "🧊 Cold"})`)
+      .join(", ");
+    orderField.value = "Items: " + orderSummary + " | Total: " + total + "💋";
   }
+  
     // open modal when cart icon is clicked
   document.getElementById("cart-icon").addEventListener("click", () => {
     document.getElementById("cart-modal").classList.add("open");
